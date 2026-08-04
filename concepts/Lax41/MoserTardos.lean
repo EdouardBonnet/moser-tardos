@@ -3,6 +3,7 @@ import Mathlib
 /-!
 ---
 title: The Moser–Tardos theorem
+type: theorem
 ---
 Let finitely many mutually independent random variables determine finitely many
 measurable bad events.  If numbers $x(A)\in(0,1)$ satisfy
@@ -94,20 +95,17 @@ def currentAssignment (table : ResamplingTable Value) (counts : I → Nat) :
   fun i ↦ table ⟨i, counts i⟩
 
 /-- Increment precisely the counters in the scope of the selected event. -/
-def advanceCounts (scope : E → Finset I) (counts : I → Nat) :
-    Option E → I → Nat
-  | none => counts
-  | some e => fun i ↦ if i ∈ scope e then counts i + 1 else counts i
+def advanceCounts (scope : E → Finset I) (counts : I → Nat)
+    (selected : Option E) : I → Nat :=
+  selected.elim counts fun e i ↦ if i ∈ scope e then counts i + 1 else counts i
 
 /-- The row counters after the first `n` iterations of the resampling algorithm. -/
 def runCounts (scope : E → Finset I)
     (bad : ∀ e, Set (LocalAssignment Value (scope e)))
     (rule : SelectionRule Value scope bad) (table : ResamplingTable Value) :
-    Nat → I → Nat
-  | 0 => fun _ ↦ 0
-  | n + 1 =>
-      let counts := runCounts scope bad rule table n
-      advanceCounts scope counts (rule.choose (currentAssignment Value table counts))
+    Nat → I → Nat :=
+  Nat.rec (fun _ ↦ 0) fun _ counts ↦
+    advanceCounts scope counts (rule.choose (currentAssignment Value table counts))
 
 /-- The event resampled at time `n`, or `none` once no bad event remains. -/
 def resamplingLog (scope : E → Finset I)
