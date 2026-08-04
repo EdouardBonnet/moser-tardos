@@ -7,7 +7,7 @@ open scoped ENNReal
 
 namespace Lax41Proofs
 
-open Lax41.MoserTardos
+open Lax41.MoserTardosDefinitions
 
 variable {E : Type} [Fintype E] [DecidableEq E]
 
@@ -1080,6 +1080,22 @@ section Resampling
 
 variable {I : Type} [Fintype I] [DecidableEq I]
 
+/-- Proof-local compatibility name for a Moser--Tardos resampling rule. -/
+abbrev SelectionRule (Value : I → Type) [∀ i, MeasurableSpace (Value i)]
+    (scope : E → Finset I)
+    (bad : ∀ e, Set (LocalAssignment Value (scope e))) :=
+  ResamplingRule Value scope bad
+
+/-- Proof-local adjacency relation, including equality at witness-tree roots. -/
+def scopeRelated (scope : E → Finset I) (a b : E) : Prop :=
+  a = b ∨ ¬Disjoint (scope a) (scope b)
+
+instance scopeRelated.instDecidable (scope : E → Finset I) :
+    DecidableRel (scopeRelated scope) := by
+  intro a b
+  unfold scopeRelated
+  infer_instance
+
 theorem scopeRelated_refl (scope : E → Finset I) : Reflexive (scopeRelated scope) :=
   fun a ↦ Or.inl rfl
 
@@ -1250,10 +1266,10 @@ theorem ProperTree.measure_passes (μ : ∀ i, MeasureTheory.Measure (Value i))
       t.weight (eventProbability Value μ scope bad) := by
   have hmap :
       (MeasureTheory.Measure.infinitePi
-          (fun j : TableIndex (I := I) ↦ μ j.1)).map (t.extractCells Value scope) =
+          (fun j : TableIndex (Variable := I) ↦ μ j.1)).map (t.extractCells Value scope) =
         MeasureTheory.Measure.infinitePi (fun c : t.Cell scope ↦ μ c.2.1) := by
     change (MeasureTheory.Measure.infinitePi
-        (fun j : TableIndex (I := I) ↦ μ j.1)).map
+        (fun j : TableIndex (Variable := I) ↦ μ j.1)).map
         (fun table c ↦ table (t.cellIndex scope c)) = _
     exact MeasureTheory.Measure.map_infinitePi_infinitePi_of_inj
       (t.cellIndex_injective scope)
@@ -1740,6 +1756,27 @@ theorem expectedResamplings_le_of_charge
     _ ≤ y root := ProperTree.tsum_weight_le_of_charge
       (scopeRelated scope) (eventProbability Value μ scope bad) y hcharge root
 
+/-- The odds used by the witness-tree branching-process estimate. -/
+noncomputable def odds (x : E → NNReal) (a : E) : NNReal :=
+  x a / (1 - x a)
+
+/-- A proof-local factor encoding membership in a dependency neighborhood. -/
+def localLemmaFactor (scope : E → Finset I) (x : E → NNReal)
+    (a b : E) : NNReal :=
+  if b ≠ a ∧ ¬Disjoint (scope a) (scope b) then 1 - x b else 1
+
+/-- The local-lemma product in a form convenient for witness-tree algebra. -/
+noncomputable def localLemmaBound (scope : E → Finset I)
+    (x : E → NNReal) (a : E) : NNReal :=
+  x a * ∏ b : E, localLemmaFactor scope x a b
+
+/-- Proof-local abbreviation for the sum of all expected resampling counts. -/
+noncomputable def expectedTotalResamplings
+    (μ : ∀ i, MeasureTheory.Measure (Value i)) (scope : E → Finset I)
+    (bad : ∀ e, Set (LocalAssignment Value (scope e)))
+    (rule : SelectionRule Value scope bad) : ℝ≥0∞ :=
+  ∑ e : E, expectedResamplings Value μ scope bad rule e
+
 theorem one_sub_mul_one_add_odds (x : E → NNReal)
     (hx : ∀ a, x a < 1) (a : E) :
     (1 - x a) * (1 + odds x a) = 1 := by
@@ -1763,6 +1800,17 @@ theorem mul_one_add_odds (x : E → NNReal)
 noncomputable def oddsFactor (scope : E → Finset I) (x : E → NNReal)
     (a b : E) : NNReal :=
   if scopeRelated scope a b then 1 + odds x b else 1
+
+theorem localLemmaBound_eq_dependencyNeighborhoodProduct
+    (variablesOf : E → Finset I) (x : E → NNReal) (A : E) :
+    localLemmaBound variablesOf x A =
+      x A * ∏ B ∈ dependencyNeighborhood variablesOf A, (1 - x B) := by
+  classical
+  rw [localLemmaBound]
+  congr 1
+  rw [dependencyNeighborhood]
+  simp only [Finset.prod_filter]
+  congr with B
 
 theorem localLemmaFactor_mul_oddsFactor (scope : E → Finset I)
     (x : E → NNReal) (hx : ∀ a, x a < 1) (a b : E) :
@@ -2021,25 +2069,40 @@ these products.  Finiteness of that sum also yields a terminating table and
 hence an assignment avoiding all bad events.
 -/
 theorem moser_tardos
-    (μ : ∀ i, MeasureTheory.Measure (Value i))
-    [∀ i, MeasureTheory.IsProbabilityMeasure (μ i)]
-    (scope : E → Finset I)
-    (bad : ∀ e, Set (LocalAssignment Value (scope e)))
-    (hbad : ∀ e, MeasurableSet (bad e))
-    (rule : SelectionRule Value scope bad) (x : E → NNReal)
-    (_hx_pos : ∀ a, 0 < x a) (hx_lt_one : ∀ a, x a < 1)
-    (hprob : ∀ a, eventProbability Value μ scope bad a ≤
-      (localLemmaBound scope x a : ℝ≥0∞)) :
-    (∃ a : Assignment Value, ∀ e, ¬violates Value scope bad a e) ∧
-      (∀ root, expectedResamplings Value μ scope bad rule root ≤
-        (odds x root : ℝ≥0∞)) ∧
-      expectedTotalResamplings Value μ scope bad rule ≤
-        ∑ e : E, (odds x e : ℝ≥0∞) := by
-  refine ⟨exists_good_assignment Value μ scope bad hbad rule x hx_lt_one hprob, ?_⟩
-  refine ⟨?_, expectedTotalResamplings_le Value μ scope bad hbad rule x
-    hx_lt_one hprob⟩
-  intro root
-  exact expectedResamplings_le Value μ scope bad hbad rule x hx_lt_one hprob root
+    (distribution : ∀ i, MeasureTheory.Measure (Value i))
+    [∀ i, MeasureTheory.IsProbabilityMeasure (distribution i)]
+    (variablesOf : E → Finset I)
+    (badEvent : ∀ A, Set (LocalAssignment Value (variablesOf A)))
+    (badEvent_measurable : ∀ A, MeasurableSet (badEvent A))
+    (selectionRule : ResamplingRule Value variablesOf badEvent)
+    (x : E → NNReal)
+    (_x_positive : ∀ A, 0 < x A)
+    (x_less_than_one : ∀ A, x A < 1)
+    (local_lemma_hypothesis : ∀ A,
+      eventProbability Value distribution variablesOf badEvent A ≤
+        ((x A * ∏ B ∈ dependencyNeighborhood variablesOf A, (1 - x B) : NNReal) :
+          ℝ≥0∞)) :
+    (∃ assignment : Assignment Value,
+        ∀ A, ¬violates Value variablesOf badEvent assignment A) ∧
+      (∀ A, expectedResamplings Value distribution variablesOf badEvent selectionRule A ≤
+        ((x A / (1 - x A) : NNReal) : ℝ≥0∞)) ∧
+      (∑ A : E,
+          expectedResamplings Value distribution variablesOf badEvent selectionRule A) ≤
+        ∑ A : E, ((x A / (1 - x A) : NNReal) : ℝ≥0∞) := by
+  have hprob : ∀ A, eventProbability Value distribution variablesOf badEvent A ≤
+      (localLemmaBound variablesOf x A : ℝ≥0∞) := by
+    intro A
+    rw [localLemmaBound_eq_dependencyNeighborhoodProduct variablesOf x A]
+    exact local_lemma_hypothesis A
+  refine ⟨exists_good_assignment Value distribution variablesOf badEvent
+    badEvent_measurable selectionRule x x_less_than_one hprob, ?_⟩
+  constructor
+  · intro A
+    simpa only [odds] using expectedResamplings_le Value distribution variablesOf
+      badEvent badEvent_measurable selectionRule x x_less_than_one hprob A
+  · simpa only [expectedTotalResamplings, odds] using
+      expectedTotalResamplings_le Value distribution variablesOf badEvent
+        badEvent_measurable selectionRule x x_less_than_one hprob
 
 end Resampling
 
