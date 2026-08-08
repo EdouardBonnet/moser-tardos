@@ -2,24 +2,34 @@ specVersion: "1"
 id: lax-41
 leanVersion: "v4.30.0"
 mathlibVersion: "c5ea00351c28e24afc9f0f84379aa41082b1188f"
-title: Moser–Tardos and the Distributional Local Lemma
+title: Constructive Lovász Local Lemma
 authors:
   - name: Édouard Bonnet
     github: EdouardBonnet
 bibEntries:
   - |
-    @article{MoserTardos2009,
-      title = {A Constructive Proof of the General Lovász Local Lemma},
+    @article{MoserTardos2010,
+      title = {A Constructive Proof of the General {Lovász} Local Lemma},
       author = {Moser, Robin A. and Tardos, Gábor},
-      journal = {arXiv preprint arXiv:0903.0544},
-      year = {2009},
-      url = {https://arxiv.org/abs/0903.0544}
+      journal = {Journal of the ACM},
+      volume = {57},
+      number = {2},
+      pages = {11:1--11:15},
+      year = {2010},
+      month = jan,
+      doi = {10.1145/1667053.1667060},
+      url = {https://doi.org/10.1145/1667053.1667060}
     }
   - |
     @article{HaeuplerSahaSrinivasan2011,
-      title = {New Constructive Aspects of the Lovász Local Lemma},
+      title = {New Constructive Aspects of the {Lovász} Local Lemma},
       author = {Haeupler, Bernhard and Saha, Barna and Srinivasan, Aravind},
-      journal = {arXiv preprint arXiv:1001.1231},
+      journal = {Journal of the ACM},
+      volume = {58},
+      number = {6},
+      pages = {28:1--28:28},
       year = {2011},
-      url = {https://arxiv.org/abs/1001.1231}
+      month = dec,
+      doi = {10.1145/2049697.2049702},
+      url = {https://doi.org/10.1145/2049697.2049702}
     }
