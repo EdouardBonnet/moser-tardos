@@ -1,5 +1,5 @@
 import Mathlib
-import Lax41.MoserTardosDefinitions
+import Lax296731.MoserTardosDefinitions
 
 /-!
 ---
@@ -19,9 +19,9 @@ set_option autoImplicit false
 
 open scoped ENNReal
 
-namespace Lax41.HaeuplerSahaSrinivasanDefinitions
+namespace Lax296731.HaeuplerSahaSrinivasanDefinitions
 
-open Lax41.MoserTardosDefinitions
+open Lax296731.MoserTardosDefinitions
 
 variable {Event : Type} [Fintype Event] [DecidableEq Event]
 variable {Variable : Type} [Fintype Variable] [DecidableEq Variable]
@@ -142,4 +142,4 @@ noncomputable def probabilityEventInOutput
   tableMeasure Value distribution
     (eventOccursInOutput Value badEvents variablesOf event selectionRule B)
 
-end Lax41.HaeuplerSahaSrinivasanDefinitions
+end Lax296731.HaeuplerSahaSrinivasanDefinitions

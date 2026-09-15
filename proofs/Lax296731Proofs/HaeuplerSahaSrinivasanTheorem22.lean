@@ -1,15 +1,15 @@
 import Mathlib
-import Lax41.HaeuplerSahaSrinivasanTheorem22
-import Lax41Proofs.MoserTardos
+import Lax296731.HaeuplerSahaSrinivasanTheorem22
+import Lax296731Proofs.MoserTardos
 
 set_option autoImplicit false
 
 open scoped ENNReal
 
-namespace Lax41Proofs
+namespace Lax296731Proofs
 
-open Lax41.MoserTardosDefinitions
-open Lax41.HaeuplerSahaSrinivasanDefinitions
+open Lax296731.MoserTardosDefinitions
+open Lax296731.HaeuplerSahaSrinivasanDefinitions
 
 variable {E : Type} [Fintype E] [DecidableEq E]
 
@@ -276,16 +276,16 @@ noncomputable def observedRule (scope : E → Finset I)
         have hq : queryHolds Value queryScope query assignment := by
           by_contra hnq
           simp [observedChoose, hnq] at hchoose
-        simpa [violates, restrictAssignment, observedScope, observedEvent,
-          queryHolds] using hq
+        change (fun i : queryScope ↦ assignment i.1) ∈ query
+        exact hq
     | some e =>
         have hnq : ¬queryHolds Value queryScope query assignment := by
           intro hq
           simp [observedChoose, hq] at hchoose
         have he : rule.choose assignment = some e := by
           simpa [observedChoose, hnq] using hchoose
-        simpa [violates, restrictAssignment, observedScope, observedEvent] using
-          rule.sound he
+        change restrictAssignment Value scope assignment e ∈ bad e
+        exact rule.sound he
   complete := by
     intro assignment hchoose
     have hnq : ¬queryHolds Value queryScope query assignment := by
@@ -296,11 +296,11 @@ noncomputable def observedRule (scope : E → Finset I)
     intro label
     cases label with
     | none =>
-        simpa [violates, restrictAssignment, observedScope, observedEvent,
-          queryHolds] using hnq
+        change (fun i : queryScope ↦ assignment i.1) ∉ query
+        exact hnq
     | some e =>
-        simpa [violates, restrictAssignment, observedScope, observedEvent] using
-          rule.complete hnone e
+        change restrictAssignment Value scope assignment e ∉ bad e
+        exact rule.complete hnone e
 
 /-- The observed event holds at stage `n` of the original execution. -/
 def queryOccursAt (scope : E → Finset I)
@@ -849,12 +849,12 @@ theorem haeuplerSahaSrinivasan_rootProduct
             none child
           then 1 + allowedOdds (fun A : BadEventIndex badEvents ↦ A.1 ≠ B) x child
           else 1)) =
-      ((∏ C ∈ Lax41.HaeuplerSahaSrinivasanDefinitions.dependencyNeighborhood
+      ((∏ C ∈ Lax296731.HaeuplerSahaSrinivasanDefinitions.dependencyNeighborhood
           badEvents variablesOf B, (1 - x C)⁻¹ : NNReal) : ℝ≥0∞) := by
   classical
   rw [observedRootProduct_eq]
   rw [ENNReal.coe_finsetProd]
-  rw [Lax41.HaeuplerSahaSrinivasanDefinitions.dependencyNeighborhood,
+  rw [Lax296731.HaeuplerSahaSrinivasanDefinitions.dependencyNeighborhood,
     Finset.prod_filter]
   apply Finset.prod_congr rfl
   intro C _hC
@@ -887,7 +887,7 @@ theorem eventOccursInOutput_subset_eventEverOccurs
 
 /--
 ---
-conclusion: Lax41.HaeuplerSahaSrinivasanTheorem22.theorem_2_2
+conclusion: Lax296731.HaeuplerSahaSrinivasanTheorem22.theorem_2_2
 ---
 At the first stage where the observed event is true, adjoin it as a
 distinguished root to the execution history.  The resulting proper witness
@@ -915,13 +915,13 @@ theorem theorem_2_2
           (badEventVariables badEvents variablesOf)
           (badEventSet Value badEvents variablesOf event) A ≤
         ((x A * ∏ C ∈
-          Lax41.HaeuplerSahaSrinivasanDefinitions.dependencyNeighborhood
+          Lax296731.HaeuplerSahaSrinivasanDefinitions.dependencyNeighborhood
             badEvents variablesOf A.1,
           (1 - x C) : NNReal) : ℝ≥0∞))
     (B : Event) :
     let upperBound :=
       eventProbability Value distribution variablesOf event B *
-        ((∏ C ∈ Lax41.HaeuplerSahaSrinivasanDefinitions.dependencyNeighborhood
+        ((∏ C ∈ Lax296731.HaeuplerSahaSrinivasanDefinitions.dependencyNeighborhood
           badEvents variablesOf B, (1 - x C)⁻¹ : NNReal) : ℝ≥0∞)
     probabilityEventEverOccurs Value distribution badEvents variablesOf event
         selectionRule B ≤ upperBound ∧
@@ -942,14 +942,19 @@ theorem theorem_2_2
     rw [localLemmaBound_eq_dependencyNeighborhoodProduct
       (badEventVariables badEvents variablesOf) x A]
     have hneighborhood :
-        Lax41.MoserTardosDefinitions.dependencyNeighborhood
+        Lax296731.MoserTardosDefinitions.dependencyNeighborhood
             (badEventVariables badEvents variablesOf) A =
-          Lax41.HaeuplerSahaSrinivasanDefinitions.dependencyNeighborhood
+          Lax296731.HaeuplerSahaSrinivasanDefinitions.dependencyNeighborhood
             badEvents variablesOf A.1 := by
       ext C
-      simp [Lax41.MoserTardosDefinitions.dependencyNeighborhood,
-      Lax41.HaeuplerSahaSrinivasanDefinitions.dependencyNeighborhood,
+      simp [Lax296731.MoserTardosDefinitions.dependencyNeighborhood,
+      Lax296731.HaeuplerSahaSrinivasanDefinitions.dependencyNeighborhood,
         badEventVariables, disjoint_comm]
+      constructor
+      · intro hC
+        exact (Finset.mem_filter.mp hC).2
+      · intro hC
+        exact Finset.mem_filter.mpr ⟨Finset.mem_attach _ _, hC⟩
     rw [hneighborhood]
     exact local_lemma_hypothesis A
   have hallowed : ∀ (assignment : Assignment Value)
@@ -960,8 +965,8 @@ theorem theorem_2_2
     apply hquery
     subst B
     have htrue := selectionRule.sound hchoose
-    simpa [queryHolds, violates, restrictAssignment, badEventVariables,
-      badEventSet] using htrue
+    change (fun i : variablesOf A.1 ↦ assignment i.1) ∈ event A.1 at htrue
+    exact htrue
   have heverRaw := measure_queryEverOccurs_le_rootProduct Value distribution
     (badEventVariables badEvents variablesOf)
     (badEventSet Value badEvents variablesOf event) hbad selectionRule
@@ -971,7 +976,7 @@ theorem theorem_2_2
       probabilityEventEverOccurs Value distribution badEvents variablesOf event
           selectionRule B ≤
         eventProbability Value distribution variablesOf event B *
-          ((∏ C ∈ Lax41.HaeuplerSahaSrinivasanDefinitions.dependencyNeighborhood
+          ((∏ C ∈ Lax296731.HaeuplerSahaSrinivasanDefinitions.dependencyNeighborhood
             badEvents variablesOf B, (1 - x C)⁻¹ : NNReal) : ℝ≥0∞) := by
     calc
       probabilityEventEverOccurs Value distribution badEvents variablesOf event
@@ -991,7 +996,7 @@ theorem theorem_2_2
                 (fun A : BadEventIndex badEvents ↦ A.1 ≠ B) x child
               else 1) := heverRaw
       _ = eventProbability Value distribution variablesOf event B *
-          ((∏ C ∈ Lax41.HaeuplerSahaSrinivasanDefinitions.dependencyNeighborhood
+          ((∏ C ∈ Lax296731.HaeuplerSahaSrinivasanDefinitions.dependencyNeighborhood
             badEvents variablesOf B, (1 - x C)⁻¹ : NNReal) : ℝ≥0∞) := by
         rw [haeuplerSahaSrinivasan_rootProduct badEvents variablesOf x x_less_than_one B]
         rfl
@@ -1005,9 +1010,9 @@ theorem theorem_2_2
         (eventOccursInOutput_subset_eventEverOccurs Value badEvents variablesOf
           event selectionRule B)
     _ ≤ eventProbability Value distribution variablesOf event B *
-          ((∏ C ∈ Lax41.HaeuplerSahaSrinivasanDefinitions.dependencyNeighborhood
+          ((∏ C ∈ Lax296731.HaeuplerSahaSrinivasanDefinitions.dependencyNeighborhood
             badEvents variablesOf B, (1 - x C)⁻¹ : NNReal) : ℝ≥0∞) := hever
 
 end HaeuplerSahaSrinivasan
 
-end Lax41Proofs
+end Lax296731Proofs

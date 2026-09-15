@@ -1,2 +1,0 @@
-import Lax41Proofs.MoserTardos
-import Lax41Proofs.HaeuplerSahaSrinivasanTheorem22
