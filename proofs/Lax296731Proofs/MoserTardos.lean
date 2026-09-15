@@ -1,13 +1,13 @@
 import Mathlib
-import Lax41.MoserTardos
+import Lax296731.MoserTardos
 
 set_option autoImplicit false
 
 open scoped ENNReal
 
-namespace Lax41Proofs
+namespace Lax296731Proofs
 
-open Lax41.MoserTardosDefinitions
+open Lax296731.MoserTardosDefinitions
 
 variable {E : Type} [Fintype E] [DecidableEq E]
 
@@ -64,7 +64,14 @@ theorem BTree.sum_weight_le_of_charge (r : E → E → Prop) [DecidableRel r]
     ∀ (n : Nat) (a : E), ∑ t : BTree E n a, t.weight r p ≤ y a := by
   intro n
   induction n with
-  | zero => simp [BTree]
+  | zero =>
+      intro a
+      calc
+        (∑ t : BTree E 0 a, t.weight r p) = 0 := by
+          apply Finset.sum_eq_zero
+          intro t _ht
+          exact Fin.elim0 t
+        _ ≤ y a := bot_le
   | succ n ih =>
       intro a
       rw [BTree.sum_weight_succ]
@@ -651,12 +658,14 @@ theorem BTree.exists_paths_eq (n : Nat) (a : E) (S : Finset (List E))
       refine ⟨t, ?_⟩
       ext p
       cases p with
-      | nil => simpa [t] using hroot
+      | nil =>
+          exact ⟨fun _ht ↦ hroot, fun _hS ↦ BTree.nil_mem_paths t⟩
       | cons b q =>
           have hnot : b :: q ∉ S := by
             intro hmem
             have := hdepth _ hmem
             simp at this
+          rw [BTree.cons_mem_paths]
           simp [t, hnot]
   | succ n ih =>
       have hchild (b : E) (hb : [b] ∈ S) :
@@ -674,8 +683,10 @@ theorem BTree.exists_paths_eq (n : Nat) (a : E) (S : Finset (List E))
       refine ⟨t, ?_⟩
       ext p
       cases p with
-      | nil => simpa [t] using hroot
+      | nil =>
+          exact ⟨fun _ht ↦ hroot, fun _hS ↦ BTree.nil_mem_paths t⟩
       | cons b q =>
+          rw [BTree.cons_mem_paths]
           by_cases hb : [b] ∈ S
           · have hchosen := Classical.choose_spec (hchild b hb)
             simp [t, child, hb, hchosen]
@@ -1058,7 +1069,7 @@ theorem ProperTree.tsum_weight_le_of_charge (r : E → E → Prop) [DecidableRel
     if ht : t ∈ S then t.toBTree n (hdepth t ht) else fun _ ↦ none
   have hencode_paths (t : ProperTree r root) (ht : t ∈ S) :
       (encode t).paths = t.paths := by
-    simp only [encode, dif_pos ht]
+    rw [show encode t = t.toBTree n (hdepth t ht) by simp [encode, ht]]
     exact t.toBTree_paths n (hdepth t ht)
   have hencode_inj : Set.InjOn encode (↑S : Set (ProperTree r root)) := by
     intro s hs t ht heq
@@ -1224,11 +1235,13 @@ theorem ProperTree.mem_passes_iff (scope : E → Finset I)
   constructor
   · intro h v
     have hv := h v (by simp)
-    simpa [ProperTree.curryCells, ProperTree.extractCells,
-      ProperTree.cellIndex] using hv
+    change (fun i : scope (t.nodeLabel v) ↦
+      table ⟨i.1, t.sampleNumber scope v.1 i.1⟩) ∈ bad (t.nodeLabel v) at hv
+    exact hv
   · intro h v _hv
-    simpa [ProperTree.curryCells, ProperTree.extractCells,
-      ProperTree.cellIndex] using h v
+    change (fun i : scope (t.nodeLabel v) ↦
+      table ⟨i.1, t.sampleNumber scope v.1 i.1⟩) ∈ bad (t.nodeLabel v)
+    exact h v
 
 theorem ProperTree.measurableSet_groupedBad (scope : E → Finset I)
     (bad : ∀ e, Set (LocalAssignment Value (scope e)))
@@ -1859,7 +1872,9 @@ theorem charge_of_localLemmaBound (scope : E → Finset I)
         (localLemmaBound scope x a : ℝ≥0∞) *
           ∏ b : E,
             (if scopeRelated scope a b then 1 + (odds x b : ℝ≥0∞) else 1) :=
-      mul_le_mul_right' (hp a) _
+      by
+        gcongr
+        exact hp a
     _ = ((localLemmaBound scope x a *
           ∏ b : E, oddsFactor scope x a b : NNReal) : ℝ≥0∞) := by
       refine Eq.trans ?_ (ENNReal.coe_mul _ _).symm
@@ -2059,7 +2074,7 @@ theorem exists_good_assignment
 
 /--
 ---
-conclusion: Lax41.MoserTardos.moser_tardos
+conclusion: Lax296731.MoserTardos.moser_tardos
 ---
 The Moser--Tardos witness-tree argument.  An infinite table supplies every
 fresh sample used by the algorithm.  Each resampling occurrence injects into
@@ -2106,4 +2121,4 @@ theorem moser_tardos
 
 end Resampling
 
-end Lax41Proofs
+end Lax296731Proofs
