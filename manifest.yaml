@@ -5,7 +5,7 @@ mathlibVersion: "db584cd6d46c92f209a44c0f1c829460d327499d"
 supersedes: lax-41
 title: Constructive Lovász Local Lemma
 authors:
-  - name: Édouard Bonnet
+  - name: Édouard Bonnet, Codex 5.6 and 6
     github: EdouardBonnet
 bibEntries:
   - |
