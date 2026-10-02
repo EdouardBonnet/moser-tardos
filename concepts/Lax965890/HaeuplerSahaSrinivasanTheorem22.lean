@@ -1,5 +1,5 @@
 import Mathlib
-import Lax296731.HaeuplerSahaSrinivasanDefinitions
+import Lax965890.HaeuplerSahaSrinivasanDefinitions
 
 /-!
 ---
@@ -22,10 +22,10 @@ set_option autoImplicit false
 
 open scoped ENNReal
 
-namespace Lax296731.HaeuplerSahaSrinivasanTheorem22
+namespace Lax965890.HaeuplerSahaSrinivasanTheorem22
 
-open Lax296731.MoserTardosDefinitions
-open Lax296731.HaeuplerSahaSrinivasanDefinitions
+open Lax965890.MoserTardosDefinitions
+open Lax965890.HaeuplerSahaSrinivasanDefinitions
 
 /-- The distributional local lemma of Haeupler, Saha, and Srinivasan, Theorem 2.2. -/
 axiom theorem_2_2
@@ -60,4 +60,4 @@ axiom theorem_2_2
       probabilityEventInOutput Value distribution badEvents variablesOf event
         selectionRule B ≤ upperBound
 
-end Lax296731.HaeuplerSahaSrinivasanTheorem22
+end Lax965890.HaeuplerSahaSrinivasanTheorem22

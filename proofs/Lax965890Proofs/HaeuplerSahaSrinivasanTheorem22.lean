@@ -1,15 +1,15 @@
 import Mathlib
-import Lax296731.HaeuplerSahaSrinivasanTheorem22
-import Lax296731Proofs.MoserTardos
+import Lax965890.HaeuplerSahaSrinivasanTheorem22
+import Lax965890Proofs.MoserTardos
 
 set_option autoImplicit false
 
 open scoped ENNReal
 
-namespace Lax296731Proofs
+namespace Lax965890Proofs
 
-open Lax296731.MoserTardosDefinitions
-open Lax296731.HaeuplerSahaSrinivasanDefinitions
+open Lax965890.MoserTardosDefinitions
+open Lax965890.HaeuplerSahaSrinivasanDefinitions
 
 variable {E : Type} [Fintype E] [DecidableEq E]
 
@@ -849,12 +849,12 @@ theorem haeuplerSahaSrinivasan_rootProduct
             none child
           then 1 + allowedOdds (fun A : BadEventIndex badEvents ↦ A.1 ≠ B) x child
           else 1)) =
-      ((∏ C ∈ Lax296731.HaeuplerSahaSrinivasanDefinitions.dependencyNeighborhood
+      ((∏ C ∈ Lax965890.HaeuplerSahaSrinivasanDefinitions.dependencyNeighborhood
           badEvents variablesOf B, (1 - x C)⁻¹ : NNReal) : ℝ≥0∞) := by
   classical
   rw [observedRootProduct_eq]
   rw [ENNReal.coe_finsetProd]
-  rw [Lax296731.HaeuplerSahaSrinivasanDefinitions.dependencyNeighborhood,
+  rw [Lax965890.HaeuplerSahaSrinivasanDefinitions.dependencyNeighborhood,
     Finset.prod_filter]
   apply Finset.prod_congr rfl
   intro C _hC
@@ -887,7 +887,7 @@ theorem eventOccursInOutput_subset_eventEverOccurs
 
 /--
 ---
-conclusion: Lax296731.HaeuplerSahaSrinivasanTheorem22.theorem_2_2
+conclusion: Lax965890.HaeuplerSahaSrinivasanTheorem22.theorem_2_2
 ---
 At the first stage where the observed event is true, adjoin it as a
 distinguished root to the execution history.  The resulting proper witness
@@ -915,13 +915,13 @@ theorem theorem_2_2
           (badEventVariables badEvents variablesOf)
           (badEventSet Value badEvents variablesOf event) A ≤
         ((x A * ∏ C ∈
-          Lax296731.HaeuplerSahaSrinivasanDefinitions.dependencyNeighborhood
+          Lax965890.HaeuplerSahaSrinivasanDefinitions.dependencyNeighborhood
             badEvents variablesOf A.1,
           (1 - x C) : NNReal) : ℝ≥0∞))
     (B : Event) :
     let upperBound :=
       eventProbability Value distribution variablesOf event B *
-        ((∏ C ∈ Lax296731.HaeuplerSahaSrinivasanDefinitions.dependencyNeighborhood
+        ((∏ C ∈ Lax965890.HaeuplerSahaSrinivasanDefinitions.dependencyNeighborhood
           badEvents variablesOf B, (1 - x C)⁻¹ : NNReal) : ℝ≥0∞)
     probabilityEventEverOccurs Value distribution badEvents variablesOf event
         selectionRule B ≤ upperBound ∧
@@ -942,13 +942,13 @@ theorem theorem_2_2
     rw [localLemmaBound_eq_dependencyNeighborhoodProduct
       (badEventVariables badEvents variablesOf) x A]
     have hneighborhood :
-        Lax296731.MoserTardosDefinitions.dependencyNeighborhood
+        Lax965890.MoserTardosDefinitions.dependencyNeighborhood
             (badEventVariables badEvents variablesOf) A =
-          Lax296731.HaeuplerSahaSrinivasanDefinitions.dependencyNeighborhood
+          Lax965890.HaeuplerSahaSrinivasanDefinitions.dependencyNeighborhood
             badEvents variablesOf A.1 := by
       ext C
-      simp [Lax296731.MoserTardosDefinitions.dependencyNeighborhood,
-      Lax296731.HaeuplerSahaSrinivasanDefinitions.dependencyNeighborhood,
+      simp [Lax965890.MoserTardosDefinitions.dependencyNeighborhood,
+      Lax965890.HaeuplerSahaSrinivasanDefinitions.dependencyNeighborhood,
         badEventVariables, disjoint_comm]
       constructor
       · intro hC
@@ -976,7 +976,7 @@ theorem theorem_2_2
       probabilityEventEverOccurs Value distribution badEvents variablesOf event
           selectionRule B ≤
         eventProbability Value distribution variablesOf event B *
-          ((∏ C ∈ Lax296731.HaeuplerSahaSrinivasanDefinitions.dependencyNeighborhood
+          ((∏ C ∈ Lax965890.HaeuplerSahaSrinivasanDefinitions.dependencyNeighborhood
             badEvents variablesOf B, (1 - x C)⁻¹ : NNReal) : ℝ≥0∞) := by
     calc
       probabilityEventEverOccurs Value distribution badEvents variablesOf event
@@ -996,7 +996,7 @@ theorem theorem_2_2
                 (fun A : BadEventIndex badEvents ↦ A.1 ≠ B) x child
               else 1) := heverRaw
       _ = eventProbability Value distribution variablesOf event B *
-          ((∏ C ∈ Lax296731.HaeuplerSahaSrinivasanDefinitions.dependencyNeighborhood
+          ((∏ C ∈ Lax965890.HaeuplerSahaSrinivasanDefinitions.dependencyNeighborhood
             badEvents variablesOf B, (1 - x C)⁻¹ : NNReal) : ℝ≥0∞) := by
         rw [haeuplerSahaSrinivasan_rootProduct badEvents variablesOf x x_less_than_one B]
         rfl
@@ -1010,9 +1010,9 @@ theorem theorem_2_2
         (eventOccursInOutput_subset_eventEverOccurs Value badEvents variablesOf
           event selectionRule B)
     _ ≤ eventProbability Value distribution variablesOf event B *
-          ((∏ C ∈ Lax296731.HaeuplerSahaSrinivasanDefinitions.dependencyNeighborhood
+          ((∏ C ∈ Lax965890.HaeuplerSahaSrinivasanDefinitions.dependencyNeighborhood
             badEvents variablesOf B, (1 - x C)⁻¹ : NNReal) : ℝ≥0∞) := hever
 
 end HaeuplerSahaSrinivasan
 
-end Lax296731Proofs
+end Lax965890Proofs

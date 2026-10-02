@@ -1,5 +1,5 @@
 import Mathlib
-import Lax296731.MoserTardosDefinitions
+import Lax965890.MoserTardosDefinitions
 
 /-!
 ---
@@ -19,9 +19,11 @@ set_option autoImplicit false
 
 open scoped ENNReal
 
-namespace Lax296731.HaeuplerSahaSrinivasanDefinitions
+namespace Lax965890.HaeuplerSahaSrinivasanDefinitions
 
-open Lax296731.MoserTardosDefinitions
+open scoped Classical
+
+open Lax965890.MoserTardosDefinitions
 
 variable {Event : Type} [Fintype Event] [DecidableEq Event]
 variable {Variable : Type} [Fintype Variable] [DecidableEq Variable]
@@ -87,9 +89,8 @@ noncomputable def outputTime (badEvents : Finset Event)
     (selectionRule : ResamplingRule Value
       (badEventVariables badEvents variablesOf)
       (badEventSet Value badEvents variablesOf event))
-    (table : ResamplingTable Value) : Nat := by
-  classical
-  exact if h : ∃ n, resamplingLog Value (badEventVariables badEvents variablesOf)
+    (table : ResamplingTable Value) : Nat :=
+  if h : ∃ n, resamplingLog Value (badEventVariables badEvents variablesOf)
         (badEventSet Value badEvents variablesOf event) selectionRule table n = none
       then Nat.find h
       else 0
@@ -142,4 +143,4 @@ noncomputable def probabilityEventInOutput
   tableMeasure Value distribution
     (eventOccursInOutput Value badEvents variablesOf event selectionRule B)
 
-end Lax296731.HaeuplerSahaSrinivasanDefinitions
+end Lax965890.HaeuplerSahaSrinivasanDefinitions

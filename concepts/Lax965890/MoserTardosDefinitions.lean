@@ -18,7 +18,7 @@ set_option autoImplicit false
 
 open scoped ENNReal
 
-namespace Lax296731.MoserTardosDefinitions
+namespace Lax965890.MoserTardosDefinitions
 
 variable {Event : Type} [Fintype Event] [DecidableEq Event]
 variable {Variable : Type} [Fintype Variable] [DecidableEq Variable]
@@ -139,4 +139,4 @@ def dependencyNeighborhood (variablesOf : Event → Finset Variable)
   Finset.univ.filter fun B ↦
     B ≠ A ∧ ¬Disjoint (variablesOf A) (variablesOf B)
 
-end Lax296731.MoserTardosDefinitions
+end Lax965890.MoserTardosDefinitions

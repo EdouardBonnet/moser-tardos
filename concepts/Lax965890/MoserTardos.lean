@@ -1,5 +1,5 @@
 import Mathlib
-import Lax296731.MoserTardosDefinitions
+import Lax965890.MoserTardosDefinitions
 
 /-!
 ---
@@ -23,9 +23,9 @@ set_option autoImplicit false
 
 open scoped ENNReal
 
-namespace Lax296731.MoserTardos
+namespace Lax965890.MoserTardos
 
-open Lax296731.MoserTardosDefinitions
+open Lax965890.MoserTardosDefinitions
 
 /--
 The constructive asymmetric Lovász local lemma (Moser--Tardos, Theorem 1.2),
@@ -56,4 +56,4 @@ axiom moser_tardos
           expectedResamplings Value distribution variablesOf badEvent selectionRule A) ≤
         ∑ A : Event, ((x A / (1 - x A) : NNReal) : ℝ≥0∞)
 
-end Lax296731.MoserTardos
+end Lax965890.MoserTardos

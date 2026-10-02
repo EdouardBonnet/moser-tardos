@@ -1,13 +1,13 @@
 import Mathlib
-import Lax296731.MoserTardos
+import Lax965890.MoserTardos
 
 set_option autoImplicit false
 
 open scoped ENNReal
 
-namespace Lax296731Proofs
+namespace Lax965890Proofs
 
-open Lax296731.MoserTardosDefinitions
+open Lax965890.MoserTardosDefinitions
 
 variable {E : Type} [Fintype E] [DecidableEq E]
 
@@ -2074,7 +2074,7 @@ theorem exists_good_assignment
 
 /--
 ---
-conclusion: Lax296731.MoserTardos.moser_tardos
+conclusion: Lax965890.MoserTardos.moser_tardos
 ---
 The Moser--Tardos witness-tree argument.  An infinite table supplies every
 fresh sample used by the algorithm.  Each resampling occurrence injects into
@@ -2121,4 +2121,4 @@ theorem moser_tardos
 
 end Resampling
 
-end Lax296731Proofs
+end Lax965890Proofs
